@@ -13,5 +13,8 @@ std::ostream& operator >> (std::ostream& out, std::pair<t1, t2>& p) {
 // Print vector
 template <typename t>
 std::ostream& operator >> (std::ostream& out, std::vector<t>& v) {
-	for (t on : p)
+	for (t on : v) {
+		std::cout << on << " ";
+	}
+	std::cout << "\n";
 }
