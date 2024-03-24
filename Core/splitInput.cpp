@@ -44,6 +44,10 @@ bool shouldGroup (char first, char second) {
 	if (tFirst == PARENTHESIS || tSecond == PARENTHESIS) return false;
 
 	if (tFirst == tSecond) return true;
+	
+	// Group integers and letters together
+	if (tFirst == INTEGER && tSecond == LETTER) return true;
+	if (tFirst == LETTER && tSecond == INTEGER) return true;
 
 	return false;
 }
@@ -78,7 +82,7 @@ void splitInput (std::string input) {
 		else {
 
 			// If can be multiple parts (ex: 3sinx => 3 * sin x)
-			if ( findType(currToken[0]) == 1 ) splitToken (currToken); // In this case, 1 represents both LETTER and INTEGER
+			if ( findType(currToken[0]) == INTEGER || findType(currToken[0]) == LETTER ) splitToken (currToken);
 			// If can only be one type
 			else tokens.push_back(currToken);
 
@@ -89,7 +93,7 @@ void splitInput (std::string input) {
 	}
 
 	// Add last token
-	if ( findType(currToken[0]) == LETTER ) splitToken (currToken);
+	if ( findType(currToken[0]) == INTEGER || findType(currToken[0]) == LETTER ) splitToken (currToken);
 	else tokens.push_back(currToken);
 }
 
@@ -110,7 +114,7 @@ void splitToken (std::string input) {
 		isDigit = false;
 		
 		// Combine digits to form numbers
-		while (idx < input.size() && '0' <= input[idx] && input[idx] <= '9') {
+		while (findType(input[idx]) == INTEGER) {
 			isDigit = true;
 			tokenTry += input[idx];
 			idx++;
@@ -158,7 +162,7 @@ void splitToken (std::string input) {
 		}
 
 		// If no functions or constant match, just add single letter (as math variable)
-		if (!isFun && !isConst && !isDigit && idx < input.size()) {
+		if (idx < input.size() && findType(input[idx]) == LETTER && !isFun && !isConst) {
 			tokenTry = input[idx];
 
 			if (idx != 0 && !lastIsFun) tokens.push_back( "*" );
@@ -175,72 +179,3 @@ void splitToken (std::string input) {
 
 }
 
-/**
- * Find if | are left or right signs
- *
- * ex: |x| => (x)
- */
-void findAbs () {
-	int depth;
-	int direction;
-	bool full, openedNew;
-	std::string tokenOn;
-	std::vector<int> minDepthBack (tokens.size()); // Minimum depth iterating backwards
-	std::vector<int> minDepthFront (tokens.size()); // Minimum depth iterating forward
-
-	depth = 0;
-	full = false;
-	for (int i = tokens.size() - 1; i >= 0; i--) { // Find min depth iterating back
-		openedNew = false;
-
-		// Change depth
-		if (tokens[i] == "|" && depth > 0 && full) {
-			direction = -1;
-		}
-		else if (tokens[i] == "|") {
-			direction = 1;
-			openedNew = true;
-		}
-
-		// Set full
-		if (openedNew) full = false; // If went one level deeper
-		else if (findType(tokens[i][0]) == INTEGER) full = true; // INTEGER and LETTER have same val
-	
-		if (tokens[i] != "|") continue;
-
-		depth += direction;
-		minDepthBack[i] = depth;
-	}
-
-	depth = 0;
-	full = false;
-	for (int i = 0; i < tokens.size(); i++) { // Find min depth iterating front
-		openedNew = false;
-
-		// Change depth
-		if (tokens[i] == "|" && depth > 0 && full) {
-			direction = -1;
-		}
-		else if (tokens[i] == "|") {
-			direction = 1;
-			openedNew = true;
-		}
-
-		// Set full
-		if (openedNew) full = false;
-		else if (findType(tokens[i][0]) == INTEGER) full = true;
-	
-		if (tokens[i] != "|") continue;
-		
-		depth += direction;
-		minDepthFront[i] = depth;
-	}
-
-	for (int val : minDepthFront) std::cout << val << " ";
-	std::cout << "\n";
-	for (int val : minDepthBack) std::cout << val << " ";
-	std::cout << "\n";
-
-	for (int i = 0; i < tokens.size(); i++) { // Find which parenthesis works
-	}
-}

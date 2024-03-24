@@ -1,17 +1,6 @@
 #pragma once
 
-#include <iostream>
-#include <string>
-#include <vector>
-#include <algorithm>
-#include <iterator>
-
-// Constants
-const int maxVal32 = ~(1 << 31);
-const int minVal32 = (1 << 31);
-
-const long long maxVal64 = ~(1ll << 63);
-const long long minVal64 = (1ll << 63);
+#include "../general.h"
 
 // Function
 struct Function {
@@ -40,8 +29,8 @@ const std::vector<std::string> constants = {
 // Implicit type
 enum Type {
 	EMPTY,
-	INTEGER = 1,
-	LETTER = 1,
+	INTEGER,
+	LETTER,
 	PARENTHESIS,
 	OPERAND,
 };
@@ -51,4 +40,3 @@ Type findType (char input);
 bool shouldGroup (char first, char second);
 void splitToken (std::string input);
 void splitInput (std::string input);
-void findAbs ();
