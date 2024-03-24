@@ -91,9 +91,6 @@ void splitInput (std::string input) {
 	// Add last token
 	if ( findType(currToken[0]) == LETTER ) splitToken (currToken);
 	else tokens.push_back(currToken);
-
-	findAbs();
-
 }
 
 /**
@@ -121,6 +118,7 @@ void splitToken (std::string input) {
 		if (isDigit) {
 			if (idx != 0 && !lastIsFun) tokens.push_back("_");
 			tokens.push_back(tokenTry); // Add number to tokens
+			lastIsFun = false;
 		}
 
 		// If there is a function name starting at idx
